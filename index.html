@@ -53,13 +53,19 @@
       return "taipei";
     }
 
-    function selectedLocation() {
-      const params = new URLSearchParams(window.location.search);
-      const override = params.get("ort")?.toLowerCase();
+function selectedLocation() {
+  const now = new Date();
 
-      if (override && widgets[override]) return override;
-      return locationForDate(taipeiDate());
-    }
+  const time = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Taipei",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  }).format(now);
+
+  if (time < "20:07") return "taipei";
+  return "alishan";
+}
 
     function renderWidget() {
       const location = selectedLocation();
