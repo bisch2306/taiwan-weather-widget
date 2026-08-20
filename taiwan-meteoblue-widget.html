@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Taiwan Wetter</title>
+  <style>
+    html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
+    #widget { width: 100%; overflow: hidden; }
+    #widget iframe {
+      width: 125%;
+      height: 600px;
+      border: 0;
+      transform: scale(0.8);
+      transform-origin: 0 0;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="widget"></div>
+
+  <script>
+    const widgets = {
+      taipei: "https://www.meteoblue.com/en/weather/widget/three/taipei_taiwan_1668341?geoloc=fixed&nocurrent=1&noforecast=0&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&days=4&layout=dark&user_key=d521185460200bd1&embed_key=2e079920ac5199ec&sig=759382bf6acf800903845110ae2924cc92dd74cbfdc1be0cbf27f90a74bfbad4",
+      alishan: "https://www.meteoblue.com/de/wetter/widget/three/alishan_taiwan_1679029?geoloc=fixed&nocurrent=1&noforecast=0&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&days=4&layout=dark&user_key=d521185460200bd1&embed_key=0c71c2652d5d7c1e&sig=14c51e5a736640a490b3010018c747322e00c0c8a5b1d90b31572a618e1c4ca9",
+      xiaoliuqiu: "https://www.meteoblue.com/en/weather/widget/three/baishawei_taiwan_1671114?geoloc=fixed&nocurrent=1&noforecast=0&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&days=4&layout=dark&user_key=d521185460200bd1&embed_key=740d4b3f875711c8&sig=5d73a1870b1e87b492374d24aea5642e33802ec861ec538baf6cb73e6e590af2",
+      kaohsiung: "https://www.meteoblue.com/en/weather/widget/three/kaohsiung-city_taiwan_1673820?geoloc=fixed&nocurrent=1&noforecast=0&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&days=4&layout=dark&user_key=d521185460200bd1&embed_key=c6dff58c86236b0c&sig=d1ae0f1cca3b3a6b5396886413c8b698c1948f4a08871a22be42fbf7f17648d9",
+      hualien: "https://www.meteoblue.com/en/weather/widget/three/hualien-city_taiwan_1674504?geoloc=fixed&nocurrent=1&noforecast=0&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&days=4&layout=dark&user_key=d521185460200bd1&embed_key=e2ff67f6f6e48537&sig=a6a44110e60776c2ac439ac6edebd511729f34de6a0b9b784128504eec154df3"
+    };
+
+    function taipeiDate() {
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Taipei",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(new Date());
+      const values = {};
+      for (const part of parts) {
+        if (part.type !== "literal") values[part.type] = part.value;
+      }
+      return `${values.year}-${values.month}-${values.day}`;
+    }
+
+    function locationForDate(date) {
+      if (date >= "2026-10-02" && date <= "2026-10-07") return "taipei";
+      if (date >= "2026-10-08" && date <= "2026-10-10") return "alishan";
+      if (date >= "2026-10-11" && date <= "2026-10-13") return "xiaoliuqiu";
+      if (date === "2026-10-14") return "kaohsiung";
+      if (date >= "2026-10-15" && date <= "2026-10-18") return "hualien";
+      if (date >= "2026-10-19" && date <= "2026-10-21") return "taipei";
+      return "taipei";
+    }
+
+    function selectedLocation() {
+      const params = new URLSearchParams(window.location.search);
+      const override = params.get("ort")?.toLowerCase();
+      if (override && widgets[override]) return override;
+      return locationForDate(taipeiDate());
+    }
+
+    function renderWidget() {
+      const location = selectedLocation();
+      const iframe = document.createElement("iframe");
+      iframe.src = widgets[location];
+      iframe.frameBorder = "0";
+      iframe.scrolling = "no";
+      iframe.allowTransparency = "true";
+      iframe.sandbox = "allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox";
+      document.getElementById("widget").replaceChildren(iframe);
+    }
+
+    renderWidget();
+
+    let lastDate = taipeiDate();
+    setInterval(() => {
+      const currentDate = taipeiDate();
+      if (currentDate !== lastDate) {
+        lastDate = currentDate;
+        renderWidget();
+      }
+    }, 60000);
+  </script>
+</body>
+</html>
