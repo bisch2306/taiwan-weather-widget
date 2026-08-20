@@ -74,11 +74,13 @@
 
     renderWidget();
 
-    let lastDate = taipeiDate();
+    let lastLocation = selectedLocation();
+
     setInterval(() => {
-      const currentDate = taipeiDate();
-      if (currentDate !== lastDate) {
-        lastDate = currentDate;
+      const currentLocation = selectedLocation();
+
+      if (currentLocation !== lastLocation) {
+        lastLocation = currentLocation;
         renderWidget();
       }
     }, 60000);
