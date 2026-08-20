@@ -59,17 +59,6 @@
       const override = params.get("ort")?.toLowerCase();
       if (override && widgets[override]) return override;
 
-      if (params.get("test") === "1") {
-        const minute = Number(
-          new Intl.DateTimeFormat("en-GB", {
-            timeZone: "Asia/Taipei",
-            minute: "2-digit"
-          }).format(new Date())
-        );
-
-        return minute % 2 === 0 ? "taipei" : "alishan";
-      }
-
       return locationForDate(taipeiDate());
     }
 
